@@ -1,0 +1,9 @@
+# Habilita a exibição de ícones de aplicativos
+allow_images=true
+
+# Tamanho dos ícones (em pixels)
+image_size=24
+
+# Define se o Wofi deve buscar ícones pelo caminho exato ou pelo tema do sistema
+show=drun
+

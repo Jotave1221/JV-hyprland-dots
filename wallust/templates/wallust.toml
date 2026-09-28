@@ -1,0 +1,3 @@
+[templates.waybar]
+template = "colors-waybar.css"
+target = "~/.cache/wallust/colors-waybar.css"
