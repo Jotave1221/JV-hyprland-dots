@@ -46,7 +46,7 @@ run_install() {
     
     delete_old
     check_packages "${DEP[@]}"
-    
+    cp ./select-wallpaper $HOME/.local/bin/
     mkdir -p "$HOME/Imagens/wallpapers"
     
     for FOLDER in */; do
@@ -54,6 +54,10 @@ run_install() {
         if [[ "$NOME" == ".git" ]]; then
             continue
         fi
+	if [[ "$NOME" == "wallpapers" ]]; then
+		cp -r "$FOLDER" "$HOME/Imagens/wallpapers"
+		continue
+	fi
         cp -r "$FOLDER" "$CONFIG/"
     done
 }

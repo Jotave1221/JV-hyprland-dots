@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+# Exporta caminhos para executáveis
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+
+# EXPORTA AS VARIÁVEIS DE AMBIENTE DO HYPRLAND E WAYLAND
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}"
+export HYPRLAND_INSTANCE_SIGNATURE="$HYPRLAND_INSTANCE_SIGNATURE"
+
+WALLPAPER_DIR="$HOME/Imagens/wallpapers"
+
+if [ ! -d "$WALLPAPER_DIR" ]; then
+    notify-send "Erro" "Diretório $WALLPAPER_DIR não encontrado!"
+    exit 1
+fi
+
+# 1. Filtra os nomes dos arquivos no Wofi
+SELECTED=$(find -L "$WALLPAPER_DIR" -maxdepth 2 -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.jpeg" -o -iname "*.webp" \) -exec basename {} \; | sort -u | wofi --dmenu --prompt "Selecione o Wallpaper" --width 450 --height 400 | tr -d '\r\n')
+
+if [ -z "$SELECTED" ]; then
+    exit 0
+fi
+
+# 2. Caminho do arquivo selecionado
+FULL_PATH=$(find -L "$WALLPAPER_DIR" -type f -name "$SELECTED" | head -n 1)
+
+if [ ! -f "$FULL_PATH" ]; then
+    notify-send "Erro" "Arquivo de imagem inválido: $SELECTED"
+    exit 1
+fi
+
+# 3. Aplica o wallpaper
+if command -v awww &>/dev/null; then
+    awww img "$FULL_PATH" --transition-type wipe --transition-fps 60 --transition-duration 2
+elif command -v swww &>/dev/null; then
+    swww img "$FULL_PATH" --transition-type simple
+fi
+
+# 4. Executa o Wallust de forma síncrona
+wallust run "$FULL_PATH"
+
+# Pequena pausa para garantir a gravação dos arquivos no cache antes do reload
+sleep 0.2
+
+# 5. Recarrega o Hyprland e o Waybar
+hyprctl reload
+
+if pgrep -x waybar > /dev/null; then
+    pkill waybar
+    sleep 0.1
+    waybar &
+fi
+
+notify-send "Wallust" "Wallpaper e cores atualizados!"

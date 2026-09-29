@@ -1,0 +1,9 @@
+JV-hyprland-dots
+
+my hyprland dots with some simple configs,got a nice waybar and wallust :)
+
+also comes with my wallpapers,mainly monochromatic and rick and morty.
+
+run the install script as your user,dont use sudo or execute as root!
+
+THE install.sh SCRIPT ONLY WORKS ON ARCH TO HANDLE DEPENDENCIES! (also,i didnt test it ;))
